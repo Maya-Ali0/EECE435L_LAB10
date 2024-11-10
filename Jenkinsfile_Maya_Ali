@@ -4,6 +4,7 @@ pipeline {
         VIRTUAL_ENV = 'venv'
         PYTHON = 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\python.exe'
         COV = 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\coverage.exe'
+        BAN = 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\bandit.exe'
     }
     stages {
         stage('Setup') {
@@ -53,7 +54,7 @@ pipeline {
             steps {
                 script {
                     bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install bandit"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && .\\${VIRTUAL_ENV}\\Scripts\\bandit -r . -o bandit_report.txt"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.BAN} -r . -o bandit_report.txt"
                 }
             }
             post {
