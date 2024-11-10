@@ -63,11 +63,8 @@ pipeline {
             }
             post {
                 always {
-                    script {
-                        if (fileExists('bandit_report.txt')) {
-                            archiveArtifacts artifacts: 'bandit_report.txt', allowEmptyArchive: true
-                        }
-                    }
+                    
+                    archiveArtifacts artifacts: 'bandit_report.txt', allowEmptyArchive: true
                 }
             }
         }
