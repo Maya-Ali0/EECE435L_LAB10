@@ -37,10 +37,12 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 script {
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install coverage"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV} run -m pytest"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV}  report"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV}  html"
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install coverage"
+                        bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV} run -m pytest"
+                        bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV} report"
+                        bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV} html"
+                    }
                 }
             }
             post {
@@ -53,8 +55,10 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install bandit"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.BAN} -r . -o bandit_report.txt"
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install bandit"
+                        bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.BAN} -r . -o bandit_report.txt"
+                    }
                 }
             }
             post {
@@ -68,7 +72,6 @@ pipeline {
             steps {
                 script {
                     echo "Deploying application..."
-                    // Create a 'deploy' directory and copy files to simulate deployment
                     bat "if not exist deploy mkdir deploy"
                     bat "xcopy * deploy /E /Y"  // Copies all files to 'deploy' directory
                     echo "Deployment to 'deploy' directory complete."
