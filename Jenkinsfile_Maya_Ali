@@ -11,7 +11,7 @@ pipeline {
                     if (!fileExists("${env.WORKSPACE}\\${VIRTUAL_ENV}")) {
                         bat "${env.PYTHON} -m venv ${VIRTUAL_ENV}"
                     }
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m pip install -r requirements.txt"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install -r requirements.txt"
                 }
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Lint') {
             steps {
                 script {
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m flake8 app.py"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m flake8 app.py"
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m pytest"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pytest"
                 }
             }
         }
@@ -35,10 +35,10 @@ pipeline {
         stage('Code Coverage') {
             steps {
                 script {
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m pip install coverage"
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m coverage run -m pytest"
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m coverage report"
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m coverage html"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install coverage"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && coverage run -m pytest"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && coverage report"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && coverage html"
                 }
             }
             post {
@@ -51,8 +51,8 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m pip install bandit"
-                    bat "${env.WORKSPACE}\\${VIRTUAL_ENV}\\Scripts\\python.exe -m bandit -r . -o bandit_report.txt"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install bandit"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && bandit -r . -o bandit_report.txt"
                 }
             }
             post {
@@ -66,8 +66,9 @@ pipeline {
             steps {
                 script {
                     echo "Deploying application..."
+                    // Create a 'deploy' directory and copy files to simulate deployment
                     bat "if not exist deploy mkdir deploy"
-                    bat "xcopy * deploy /E /Y"
+                    bat "xcopy * deploy /E /Y"  // Copies all files to 'deploy' directory
                     echo "Deployment to 'deploy' directory complete."
                 }
             }
