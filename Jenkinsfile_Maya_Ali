@@ -3,6 +3,7 @@ pipeline {
     environment {
         VIRTUAL_ENV = 'venv'
         PYTHON = 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\python.exe'
+        COV = 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Scripts\\coverage.exe'
     }
     stages {
         stage('Setup') {
@@ -36,9 +37,9 @@ pipeline {
             steps {
                 script {
                     bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install coverage"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && .\\${VIRTUAL_ENV}\\Scripts\\coverage run -m pytest"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && .\\${VIRTUAL_ENV}\\Scripts\\coverage report"
-                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && .\\${VIRTUAL_ENV}\\Scripts\\coverage html"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV} run -m pytest"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV}  report"
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.COV}  html"
                 }
             }
             post {
