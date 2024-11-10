@@ -73,11 +73,12 @@ pipeline {
                 script {
                     echo "Deploying application..."
                     bat "if not exist deploy mkdir deploy"
-                    bat "xcopy * deploy /E /Y"  // Copies all files to 'deploy' directory
+                    bat "xcopy * deploy /E /Y /EXCLUDE:exclude.txt"  // Create an exclude file
                     echo "Deployment to 'deploy' directory complete."
                 }
             }
         }
+
     }
     post {
         always {
