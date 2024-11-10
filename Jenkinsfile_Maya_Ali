@@ -1,51 +1,45 @@
 pipeline {
     agent any
     environment {
-        VIRTUAL_ENV = 'venv' 
-}
-
-stages {
-    stage('Setup') {
-    steps {
-    script {
-    if (!fileExists("${env.WORKSPACE}/${VIRTUAL_ENV}")) {
-    bat 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\python.exe -m venv  ${VIRTUAL_ENV}'
+        VIRTUAL_ENV = 'venv'
+        PYTHON = 'C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\python.exe'
     }
-    
-     bat '''
-            .\\venv\\Scripts\\activate
-            python -m pip install -r requirements.txt
-        '''
-
-    }
-    }
-    }
-    stage('Lint') {
-    steps {
-    script {
-    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m flake8 app.py"
-    }
-    }
-    }
-    stage('Test') {
-    steps {
-    script {
-    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pytest"
-    }
-    }
-    }
-    stage('Deploy') {
-    steps {
-    script {
-    // Deployment logic, e.g., pubating to a remote server
-    echo "Deploying application..."
-    }
-    }
-    }
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    if (!fileExists("${env.WORKSPACE}\\${VIRTUAL_ENV}")) {
+                        bat "${env.PYTHON} -m venv ${VIRTUAL_ENV}"
+                    }
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pip install -r requirements.txt"
+                }
+            }
+        }
+        stage('Lint') {
+            steps {
+                script {
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m flake8 app.py"
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    bat ".\\${VIRTUAL_ENV}\\Scripts\\activate && ${env.PYTHON} -m pytest"
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "Deploying application..."
+                }
+            }
+        }
     }
     post {
-    always {
-    cleanWs()
-    }
+        always {
+            cleanWs()
+        }
     }
 }
